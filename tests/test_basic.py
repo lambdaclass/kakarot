@@ -84,11 +84,17 @@ class TestBasic(IsolatedAsyncioTestCase):
         self.assertEqual(res.result.top_memory, Uint256(0, 0))
 
     async def test_comparison_operations(self):
+        # lt
         await self.assert_compare("_lt", Uint256(0, 0))
+        # gt
         await self.assert_compare("_gt", Uint256(1, 0))
+        # slt
         await self.assert_compare("_slt", Uint256(1, 0))
+        # sgt
         await self.assert_compare("_sgt", Uint256(0, 0))
+        # eq
         await self.assert_compare("_eq", Uint256(0, 0))
+        # iszero
         await self.assert_compare("_iszero", Uint256(1, 0))
 
     async def test_bitwise_operations(self):
@@ -169,6 +175,7 @@ class TestBasic(IsolatedAsyncioTestCase):
         self.assertEqual(res.result.top_memory, Uint256(0, 0))
 
     async def test_memory_operations(self):
+        # MSTORE
         code, calldata = get_case(case="./tests/cases/004.json")
         res = await self.zk_evm.execute(code=code, calldata=calldata).execute(
             caller_address=1
@@ -176,6 +183,7 @@ class TestBasic(IsolatedAsyncioTestCase):
         self.assertEqual(res.result.top_stack, Uint256(0, 0))
         self.assertEqual(res.result.top_memory, Uint256(10, 0))
 
+        # PC
         code, calldata = get_case(case="./tests/cases/014.json")
         res = await self.zk_evm.execute(code=code, calldata=calldata).execute(
             caller_address=1
@@ -183,6 +191,7 @@ class TestBasic(IsolatedAsyncioTestCase):
         self.assertEqual(res.result.top_stack, Uint256(3, 0))
         self.assertEqual(res.result.top_memory, Uint256(0, 0))
 
+        # MSIZE
         code, calldata = get_case(case="./tests/cases/016.json")
         res = await self.zk_evm.execute(code=code, calldata=calldata).execute(
             caller_address=1
@@ -199,6 +208,7 @@ class TestBasic(IsolatedAsyncioTestCase):
         self.assertEqual(res.result.top_memory, Uint256(0, 0))
 
     async def test_environmental_information(self):
+        # CODESIZE
         code, calldata = get_case(case="./tests/cases/006.json")
         res = await self.zk_evm.execute(code=code, calldata=calldata).execute(
             caller_address=1
@@ -206,11 +216,20 @@ class TestBasic(IsolatedAsyncioTestCase):
         self.assertEqual(res.result.top_stack, Uint256(7, 0))
         self.assertEqual(res.result.top_memory, Uint256(0, 0))
 
+        # CALLER
         code, calldata = get_case(case="./tests/cases/012.json")
         res = await self.zk_evm.execute(code=code, calldata=calldata).execute(
             caller_address=1
         )
         self.assertEqual(res.result.top_stack, Uint256(1, 0))
+        self.assertEqual(res.result.top_memory, Uint256(0, 0))
+
+        # BALANCE
+        code, calldata = get_case(case="./tests/cases/balance.json")
+        res = await self.zk_evm.execute(code=code, calldata=calldata).execute(
+            caller_address=1
+        )
+        self.assertEqual(res.result.top_stack, Uint256(0, 0))
         self.assertEqual(res.result.top_memory, Uint256(0, 0))
 
     async def test_system_operations(self):

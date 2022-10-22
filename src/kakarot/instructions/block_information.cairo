@@ -27,7 +27,7 @@ namespace BlockInformation {
     const GAS_COST_COINBASE = 2;
     const GAS_COST_TIMESTAMP = 2;
     const GAS_COST_NUMBER = 2;
-    const GAS_COST_GASLIMIT= 2;
+    const GAS_COST_GASLIMIT = 2;
 
     // @notice CHAINID operation.
     // @dev Get the chain ID.
@@ -72,7 +72,8 @@ namespace BlockInformation {
     }(ctx: model.ExecutionContext*) -> model.ExecutionContext* {
         %{ print("0x41 - COINBASE") %}
         // Get the coinbase address.
-        let coinbase_address = Helpers.to_uint256(Constants.COINBASE_ADDRESS);
+        // TODO: switch to real coinbase addr when going to prod
+        let coinbase_address = Helpers.to_uint256(Constants.MOCK_COINBASE_ADDRESS);
         let stack: model.Stack* = Stack.push(ctx.stack, coinbase_address);
 
         // Update the execution context.
@@ -142,7 +143,6 @@ namespace BlockInformation {
         let ctx = ExecutionContext.increment_gas_used(ctx, GAS_COST_NUMBER);
         return ctx;
     }
-
 
     // @notice GASLIMIT operation.
     // @dev Get gas limit
