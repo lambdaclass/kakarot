@@ -273,8 +273,10 @@ namespace ExecutionContext {
         Stack.dump(self.stack);
         %{
             print("***********************************")
-            print("===================================")
+            print("*************MEMORY****************")
         %}
+        Memory.dump(self.memory);
+        %{ print("===================================") %}
         return ();
     }
 }

@@ -22,7 +22,6 @@ namespace MemoryOperations {
     const GAS_COST_PC = 2;
     const GAS_COST_MSIZE = 2;
 
-
     // @notice MSTORE operation
     // @dev Save word to memory.
     // @custom:since Frontier
@@ -47,10 +46,6 @@ namespace MemoryOperations {
         // 1 - value: value to store in memory.
         let (stack, offset) = Stack.pop(stack);
         let (stack, value) = Stack.pop(stack);
-
-        with_attr error_message("Kakarot: MemoryOverflow") {
-            assert_le(offset.low, Constants.MAX_MEMORY_OFFSET);
-        }
 
         let memory: model.Memory* = Memory.store(self=ctx.memory, element=value, offset=offset.low);
 
@@ -100,7 +95,7 @@ namespace MemoryOperations {
     }(ctx: model.ExecutionContext*) -> model.ExecutionContext* {
         alloc_locals;
         %{ print("0x59 - MSIZE") %}
-        let len = Memory.len(ctx.memory);
+        let len = ctx.memory.bytes_len;
         let msize = Helpers.to_uint256(len);
 
         let stack: model.Stack* = Stack.push(ctx.stack, msize);
