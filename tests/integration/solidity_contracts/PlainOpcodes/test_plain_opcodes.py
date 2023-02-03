@@ -1,4 +1,5 @@
 import pytest
+from eth_utils import to_checksum_address
 from web3 import Web3
 
 from tests.utils.errors import kakarot_error
@@ -154,13 +155,15 @@ class TestPlainOpcodes:
                     caller_address=addresses[0].starknet_address,
                 )
 
-        @pytest.mark.skip("Test fails when address is 2**128 or greater")
         @pytest.mark.parametrize("address", [2**127, 2**128])
         async def test_should_not_revert_when_address_is_not_zero(
             self, plain_opcodes, addresses, address
         ):
+            address_bytes = address.to_bytes(20, byteorder="big")
+            address_hex = Web3.toChecksumAddress(address_bytes)
+
             await plain_opcodes.requireNotZero(
-                f"0x{address:x}",
+                address_hex,
                 caller_address=addresses[0].starknet_address,
             )
 
@@ -192,4 +195,6 @@ class TestPlainOpcodes:
             assert success
             decoded = Web3().codec.decode(["address", "address"], data)
             assert owner.address == decoded[0]  # tx.origin
-            assert caller.evm_contract_address == decoded[1]  # msg.sender
+            assert caller.evm_contract_address == to_checksum_address(
+                decoded[1]
+            )  # msg.sender

@@ -4,9 +4,8 @@
 
 // Starkware dependencies
 from starkware.cairo.common.cairo_builtins import HashBuiltin, BitwiseBuiltin
-from starkware.cairo.common.uint256 import Uint256, uint256_unsigned_div_rem
+from starkware.cairo.common.uint256 import Uint256, uint256_le, uint256_unsigned_div_rem
 from starkware.cairo.common.alloc import alloc
-from starkware.cairo.common.math_cmp import is_le
 from starkware.cairo.common.bool import FALSE
 
 from kakarot.model import model
@@ -14,7 +13,7 @@ from utils.utils import Helpers
 from kakarot.stack import Stack
 from kakarot.memory import Memory
 from kakarot.execution_context import ExecutionContext
-from kakarot.interfaces.interfaces import IEvmContract
+from kakarot.interfaces.interfaces import IContractAccount
 
 // @title Exchange operations opcodes.
 // @notice This file contains the functions to execute for memory operations opcodes.
@@ -221,7 +220,7 @@ namespace MemoryOperations {
 
         // Update pc if skip_jump is anything other then 0
 
-        let is_condition_valid: felt = is_le(1, skip_condition.low);
+        let (is_condition_valid) = uint256_le(Uint256(1, 0), skip_condition);
 
         if (is_condition_valid != FALSE) {
             // Update pc counter.
@@ -376,7 +375,7 @@ namespace MemoryOperations {
 
         // 3. Call Write storage on contract with starknet address
         with_attr error_message("Contract call failed") {
-            IEvmContract.write_storage(
+            IContractAccount.write_storage(
                 contract_address=starknet_contract_address, key=key, value=value
             );
         }
@@ -415,7 +414,7 @@ namespace MemoryOperations {
         // local value: Uint256;
         // 3. Get the data from storage
 
-        let (local value: Uint256) = IEvmContract.storage(
+        let (local value: Uint256) = IContractAccount.storage(
             contract_address=starknet_contract_address, key=key
         );
 
